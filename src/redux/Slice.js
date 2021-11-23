@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 export const data = {
-    value: ['Item', 'Item 1', 'Item 2'],
+    value: [],
 }
 
 const slice = createSlice({
@@ -13,10 +13,12 @@ const slice = createSlice({
         },
         RemoveItem(state, action) {
             state.value.splice(action.payload, 1)
+        },
+        deleteItems(state) {
+            state.value = []
         }
-    },
+    }
 })
 
-export const { addItem , RemoveItem } = slice.actions
-
+export const { addItem, RemoveItem, deleteItems } = slice.actions
 export default slice.reducer

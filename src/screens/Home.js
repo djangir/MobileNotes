@@ -1,24 +1,35 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ImageBackground } from 'react-native'
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, RefreshControl } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import Items from './Items'
-import { addItem } from '../redux/Slice'
+import { addItem, deleteItems } from '../redux/Slice'
 
 const Home = (paras) => {
-    const [inputText, setInputText] = useState('')
+    const [inputText, setInputText] = useState(paras.route.params.name)
+    const [inputText1, setInputText1] = useState(`${Math.floor(Math.random() * 5) + 22}`)
+    const [refreshing, setRefreshing] = React.useState(false);
     const dataValue = useSelector(state => state.value)
-
     const dispatch = useDispatch()
-
     const image = { uri: "https://drainage.pca.state.mn.us/images/6/6a/Blank-Notepad-Pencil-Pen.png" };
 
+    const wait = (timeout) => {
+        return new Promise(resolve => setTimeout(resolve, timeout));
+    }
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        dispatch(deleteItems())
+        setInputText(paras.route.params.name)
+        setInputText1(`${Math.floor(Math.random() * 5) + 22}`)
+        wait(500).then(() => setRefreshing(false));
+    }, []);
 
     function saveData() {
-        (inputText.replace(/\s/g,"") !== '') ?
-            (dispatch(addItem(inputText)),
-                setInputText('')) :
-            alert('Empty')
-
+        (inputText.replace(/\s/g, "") !== '' && inputText1.replace(/\s/g, "") !== '') ?
+            (dispatch(addItem({ item: inputText, data: inputText1 })),
+                setInputText(''),
+                setInputText1('')) :
+            alert('Empty Item')
     }
 
     return (
@@ -26,18 +37,18 @@ const Home = (paras) => {
 
             <ImageBackground source={image} style={{ flex: 1 }}>
                 <View style={[style.shadow]}>
-
-                    <View style={{ flexDirection:'row', marginTop: 15, justifyContent:'center'}}>
-                        <Text style={{color: 'white', textAlign:'center', fontSize: 15}}> Welcome </Text>
-                        
-                        <Text style={{color: 'white', textAlign:'center', fontSize: 18}}> {paras.route.params.name} </Text>
+                    <View style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'center' }}>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 15 }}> Welcome </Text>
+                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}> {paras.route.params.name} </Text>
                     </View>
-
-                    <TextInput multiline style={[style.box]} placeholder='Items' onChangeText={text => setInputText(text)} value={inputText} />
+                    <TextInput multiline maxLength={50} style={[style.box]} placeholder='Name' onChangeText={text => setInputText(text)} value={inputText} />
+                    <TextInput multiline maxLength={50} keyboardType='phone-pad' style={[style.box]} placeholder='Age' onChangeText={text => setInputText1(text)} value={inputText1} />
                     <TouchableOpacity style={[style.center, { width: '100%' }]} onPress={saveData}>
                         <Text style={[style.btn]} > Add </Text>
                     </TouchableOpacity>
-                    <ScrollView showsVerticalScrollIndicator={false}>
+
+                    <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 10, paddingBottom: 10 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+
                         {
                             dataValue.map((item, index) => {
                                 return (
@@ -50,7 +61,6 @@ const Home = (paras) => {
                 </View >
             </ImageBackground>
         </View >
-
     )
 }
 
@@ -59,7 +69,7 @@ const style = StyleSheet.create({
         borderWidth: 1,
         marginHorizontal: 10,
         marginTop: 20,
-        maxHeight: '75%',
+        maxHeight: '30%',
         borderRadius: 5,
         borderBottomWidth: 2,
         borderColor: 'silver',

@@ -7,16 +7,12 @@ const Login = (props) => {
 
     return (
         <View style={[style.space]}>
-
             <ImageBackground source={image} style={{ flex: 1 }}>
                 <View style={[style.shadow]}>
-
                     <View style={{ alignItems: 'center', margin: 10, marginTop: 50 }}>
                         <Image source={{ uri: 'https://cdn.pixabay.com/photo/2020/07/14/13/07/icon-5404125_1280.png' }} style={[style.circle]} />
                     </View>
-
                     <TextInput style={[style.box]} placeholder='Enter Your Name' maxLength={25} value={text} onChangeText={(e) => setText(e)} />
-
                     <TouchableOpacity style={[style.center, { width: '100%' }]}>
                         <Text style={[style.btn]} onPress={() => (text.replace(/\s/g, "").length > 0) ? props.navigation.navigate('Home', { name: text }) : alert('Enter Name')}> Go </Text>
                     </TouchableOpacity>
@@ -68,7 +64,6 @@ const style = StyleSheet.create({
         backgroundColor: '#00a9',
         flex: 1,
     }
-
 })
 
 export default Login

@@ -1,2 +1,2 @@
 export { store } from './Store'
-export { addItem } from './Slice'
+export { addItem, RemoveItem, deleteItems} from './Slice'
